@@ -1,0 +1,74 @@
+{% extends "garage_sale/base_gs.html" %}
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Shopping List - Garage Sale</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; }
+    .topbar { display:flex; gap:12px; align-items:center; padding:10px 12px; border-bottom:1px solid #e5e5e5; background:#fff; }
+    .spacer { flex:1; }
+    .btn { display:inline-block; padding:7px 12px; border:1px solid #ccc; border-radius:10px; background:#fff; cursor:pointer; text-decoration:none; color:#111; font-size:14px; }
+    .btn:hover { background:#f5f5f5; }
+    .wrap { padding: 14px; max-width: 900px; margin: 0 auto; }
+    .line { border:1px solid #ddd; border-radius:12px; padding:12px; margin:10px 0; }
+    .muted { color:#666; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <strong>Shopping List</strong>
+    <div class="spacer"></div>
+    <a class="btn" href="{% url 'garage_sale:home' %}">Back to map</a>
+  </div>
+
+  <div class="wrap">
+
+    {% if messages %}
+      {% for m in messages %}
+        <div style="padding:10px;border:1px solid #ddd;border-radius:10px;margin:10px 0;">{{ m }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <h3>{{ reservation.event.title|default:"Garage Sale" }}</h3>
+    <div class="muted">
+      Pickup at: <strong>{{ reservation.event.location.name }}</strong><br>
+      Sale dates: {{ reservation.event.start_date }} → {{ reservation.event.end_date }}<br>
+      Status: <strong>{{ reservation.status }}</strong>
+    </div>
+
+    <hr style="border:none;border-top:1px solid #ddd;margin:14px 0;">
+
+    {% if lines %}
+      {% for line in lines %}
+        <div class="line">
+          <strong>{{ line.item.title }}</strong> — ${{ line.price_at_time }}
+          <div class="muted">Qty: {{ line.quantity }}</div>
+        </div>
+      {% endfor %}
+
+      <h3>Total: ${{ total }}</h3>
+
+      {% if reservation.status == "DRAFT" %}
+        <form method="post" action="{% url 'garage_sale:cart_confirm' %}">
+          {% csrf_token %}
+          <button class="btn" type="submit">Confirm selection</button>
+          <a class="btn" href="{% url 'garage_sale:cart_clear' %}">Clear</a>
+        </form>
+      {% else %}
+        <div style="padding:12px;border:1px solid #ddd;border-radius:12px;">
+          Your selection is confirmed. Items are set aside. Pay on pickup.
+        </div>
+      {% endif %}
+
+    {% else %}
+      <p>Your shopping list is empty.</p>
+      <a class="btn" href="{% url 'garage_sale:home' %}">Choose a garage sale</a>
+    {% endif %}
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,86 @@
+{% extends "core/base.html" %}
+{% block content %}
+
+<div class="container py-4" style="max-width: 520px;">
+  <h1 class="h4 mb-3">Create account</h1>
+
+  {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+
+    <input type="hidden" name="next" value="{{ next }}">
+    <input type="hidden" name="service" value="{{ service }}">
+
+    <div class="mb-3">
+      <label class="form-label">Username</label>
+      <input class="form-control" name="username" value="{{ prefill.username|default:'' }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Register as</label>
+      <select class="form-select" name="role" id="roleSelect">
+        {% for v, label in user_model.Role.choices %}
+          <option value="{{ v }}" {% if prefill.role == v %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Password</label>
+      <input class="form-control" type="password" name="password1" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Confirm password</label>
+      <input class="form-control" type="password" name="password2" required>
+    </div>
+
+    <div id="ownerFields" class="border rounded p-3 mb-3" style="display:none;">
+      <div class="fw-semibold mb-2">Location details (Location Owner)</div>
+
+      <div class="mb-3">
+        <label class="form-label">Location name</label>
+        <input class="form-control" name="location_name" value="{{ prefill.location_name|default:'' }}">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Rooms (1–3)</label>
+        <input class="form-control" name="room_count" value="{{ prefill.room_count|default:'1' }}">
+      </div>
+
+      <div class="row g-2">
+        <div class="col">
+          <label class="form-label">Latitude</label>
+          <input class="form-control" name="latitude" value="{{ prefill.latitude|default:'' }}">
+        </div>
+        <div class="col">
+          <label class="form-label">Longitude</label>
+          <input class="form-control" name="longitude" value="{{ prefill.longitude|default:'' }}">
+        </div>
+      </div>
+
+      <div class="text-muted small mt-2">
+        Tip: you can paste these from Google Maps.
+      </div>
+    </div>
+
+    <button class="btn btn-success w-100">Create account</button>
+  </form>
+</div>
+
+<script>
+  (function(){
+    const roleSelect = document.getElementById("roleSelect");
+    const ownerFields = document.getElementById("ownerFields");
+    function sync(){
+      ownerFields.style.display = (roleSelect.value === "LOCATION_OWNER") ? "block" : "none";
+    }
+    roleSelect.addEventListener("change", sync);
+    sync();
+  })();
+</script>
+
+{% endblock %}

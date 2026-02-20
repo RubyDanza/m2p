@@ -1,0 +1,14 @@
+{% extends "physio/base.html" %}
+{% block title %}Access denied{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 520px;">
+  <div class="alert alert-danger">
+    You do not have permission to access this page.
+  </div>
+
+  <a href="{% url 'physio:home' %}" class="btn btn-primary">
+    Back to Physio
+  </a>
+</div>
+{% endblock %}

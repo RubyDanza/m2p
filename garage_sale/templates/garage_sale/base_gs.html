@@ -1,0 +1,39 @@
+
+{% load static %}
+
+{% block title %}Garage Sale{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="{% url 'garage_sale:home' %}">Garage Sale</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#gsNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="gsNavbar">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="{% url 'garage_sale:events_list' %}">View Events</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'garage_sale:event_create' %}">Create Event</a></li>
+      </ul>
+
+      <div class="d-flex gap-2 align-items-center">
+        {% if user.is_authenticated %}
+          <span class="text-muted small">Hi {{ user.username }}{% if user.role %} ({{ user.role }}){% endif %}</span>
+          <a class="btn btn-outline-danger btn-sm" href="{% url 'physio:logout' %}?next={% url 'garage_sale:home' %}">Logout</a>
+        {% else %}
+          <a class="btn btn-outline-primary btn-sm"
+             href="{% url 'physio:login' %}?next={% url 'garage_sale:post_login_router' %}">Login</a>
+          <a class="btn btn-primary btn-sm"
+             href="{% url 'physio:register' %}?next={% url 'garage_sale:post_login_router' %}">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+{% block body %}
+  {% block content %}{% endblock %}
+{% endblock %}

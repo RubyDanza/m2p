@@ -1,0 +1,72 @@
+{% extends "garage_sale/base_gs.html" %}
+
+{% load garage_sale_extras %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Garage Sale Consultant</title>
+  <style>
+    body{font-family:Arial;margin:16px;}
+    .card{border:1px solid #ddd;border-radius:10px;padding:12px;margin:10px 0;}
+    .muted{color:#666;font-size:12px;}
+    table{width:100%;border-collapse:collapse;margin-top:8px;}
+    th,td{border-bottom:1px solid #eee;padding:8px;text-align:left;vertical-align:top;}
+  </style>
+</head>
+<body>
+
+  <h2>Garage Sale – Consultant Pickups</h2>
+  <div class="muted">Today: {{ today }}</div>
+
+  {% if events %}
+    {% for ev in events %}
+      <div class="card">
+        <h3 style="margin:0;">{{ ev.title }}</h3>
+        <div class="muted">
+          Location: <b>{{ ev.location.name }}</b> |
+          Dates: {{ ev.start_date }} → {{ ev.end_date }}
+        </div>
+
+        {% with pickups=pickups_by_event|get_item:ev.id %}
+          {% if pickups %}
+            <h4>Confirmed pickups</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Items</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for r in pickups %}
+                  <tr>
+                    <td>
+                      <b>{{ r.customer.username }}</b><br>
+                      <span class="muted">Reservation #{{ r.id }}</span>
+                    </td>
+                    <td>
+                      <ul style="margin:0;padding-left:18px;">
+                        {% for ri in r.items.all %}
+                          <li>{{ ri.quantity }} × {{ ri.item.title }}</li>
+                        {% endfor %}
+                      </ul>
+                    </td>
+                    <td>{{ r.status }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <div class="muted" style="margin-top:8px;">No confirmed pickups yet.</div>
+          {% endif %}
+        {% endwith %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No assigned garage sale events yet.</p>
+  {% endif %}
+
+</body>
+</html>

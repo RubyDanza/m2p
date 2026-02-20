@@ -1,0 +1,78 @@
+{% extends "core/base.html" %}
+{% block title %}Consultant Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <h1 class="h4 mb-0">Consultant appointments</h1>
+    <span class="text-muted small">You’re viewing your assigned requests & bookings</span>
+  </div>
+
+  {% if consultant_appointments %}
+    <div class="table-responsive">
+      <table class="table table-sm table-striped align-middle">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Location</th>
+            <th>Customer</th>
+            <th>Status</th>
+            <th>Room</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for appt in consultant_appointments %}
+            <tr>
+              <td>{{ appt.date }}</td>
+              <td>{{ appt.time|time:"H:i" }}</td>
+              <td>
+                {% if appt.location %}
+                  {{ appt.location.name }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td>{{ appt.customer_label|default:"—" }}</td>
+
+              <td>
+                <span class="badge
+                  {% if appt.status == 'ACCEPTED' %} bg-success
+                  {% elif appt.status == 'DECLINED' %} bg-danger
+                  {% else %} bg-warning text-dark
+                  {% endif %}">
+                  {{ appt.status }}
+                </span>
+              </td>
+
+              <td>{{ appt.room_number|default:"—" }}</td>
+
+              <td class="text-end">
+                {% if appt.status == "PENDING" %}
+                  <a class="btn btn-success btn-sm"
+                     href="{% url 'physio:consultant_token_accept' appt.action_token %}">
+                    Accept
+                  </a>
+                  <a class="btn btn-outline-danger btn-sm"
+                     href="{% url 'physio:consultant_token_decline' appt.action_token %}">
+                    Decline
+                  </a>
+                {% elif appt.status == "ACCEPTED" %}
+                  <span class="text-muted small">Accepted</span>
+                {% elif appt.status == "DECLINED" %}
+                  <span class="text-muted small">Declined</span>
+                {% else %}
+                  <span class="text-muted small">—</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info mb-0">No appointments yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

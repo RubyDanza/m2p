@@ -1,0 +1,87 @@
+{% extends "garage_sale/base_gs.html" %}
+
+
+{% block title %}Garage Sale - Create Event{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 720px;">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">Create Event</h1>
+    <a class="btn btn-outline-secondary btn-sm" href="{% url 'garage_sale:events_list' %}">
+      Back to Events
+    </a>
+  </div>
+
+  {% if form.errors %}
+    <div class="alert alert-danger">
+      Please fix the errors below.
+    </div>
+  {% endif %}
+
+  <form method="post" class="card shadow-sm">
+    {% csrf_token %}
+    <div class="card-body">
+
+      <div class="mb-3">
+        <label class="form-label">Title</label>
+        {{ form.title }}
+        {% if form.title.errors %}<div class="text-danger small">{{ form.title.errors }}</div>{% endif %}
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Start Date</label>
+          {{ form.start_date }}
+          {% if form.start_date.errors %}<div class="text-danger small">{{ form.start_date.errors }}</div>{% endif %}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">End Date</label>
+          {{ form.end_date }}
+          {% if form.end_date.errors %}<div class="text-danger small">{{ form.end_date.errors }}</div>{% endif %}
+        </div>
+      </div>
+
+      {# If your form includes location OR latitude/longitude, render them here #}
+      {% if form.location %}
+        <div class="mb-3">
+          <label class="form-label">Location</label>
+          {{ form.location }}
+          {% if form.location.errors %}<div class="text-danger small">{{ form.location.errors }}</div>{% endif %}
+        </div>
+      {% endif %}
+
+      {% if form.latitude %}
+        <div class="mb-3">
+          <label class="form-label">Latitude</label>
+          {{ form.latitude }}
+          {% if form.latitude.errors %}<div class="text-danger small">{{ form.latitude.errors }}</div>{% endif %}
+        </div>
+      {% endif %}
+
+      {% if form.longitude %}
+        <div class="mb-3">
+          <label class="form-label">Longitude</label>
+          {{ form.longitude }}
+          {% if form.longitude.errors %}<div class="text-danger small">{{ form.longitude.errors }}</div>{% endif %}
+        </div>
+      {% endif %}
+
+      {% if form.notes %}
+        <div class="mb-3">
+          <label class="form-label">Notes</label>
+          {{ form.notes }}
+          {% if form.notes.errors %}<div class="text-danger small">{{ form.notes.errors }}</div>{% endif %}
+        </div>
+      {% endif %}
+
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary" type="submit">Save Event</button>
+        <a class="btn btn-outline-secondary" href="{% url 'garage_sale:events_list' %}">Cancel</a>
+      </div>
+
+    </div>
+  </form>
+
+</div>
+{% endblock %}

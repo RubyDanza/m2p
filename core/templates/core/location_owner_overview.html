@@ -1,0 +1,180 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Location Owner Overview</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+
+
+<body class="bg-light">
+<div class="container py-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h1 class="h3 mb-1">Location Owner Overview</h1>
+      <div class="text-muted">
+        Logged in as {{ request.user.username }} ({{ request.user.role }})
+      </div>
+    </div>
+
+
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary" href="{% url 'central:home' %}">Map</a>
+      <a class="btn btn-outline-secondary" href="{% url 'central:owner_onboarding' %}">Onboarding</a>
+      <form method="post" action="{% url 'central:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-danger">Logout</button>
+      </form>
+    </div>
+  </div>
+
+  {% comment %}
+    Helper: a reusable table block
+  {% endcomment %}
+
+  {% with cols="Date,Time,Location,Room,Status,Customer,Consultant,ID" %}
+  {% endwith %}
+
+  <!-- TODAY -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-header">
+      <strong>Today</strong>
+      {% if today %}<span class="text-muted">({{ today|date:"Y-m-d" }})</span>{% endif %}
+    </div>
+
+    <div class="card-body p-0">
+      {% if today_appts %}
+        <div class="table-responsive">
+          <table class="table table-striped mb-0 align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Date</th><th>Time</th><th>Location</th><th>Room</th><th>Status</th><th>Customer</th><th>Consultant</th><th>ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in today_appts %}
+                <tr>
+                  <td>{{ a.date|date:"Y-m-d" }}</td>
+                  <td>{{ a.time|time:"H:i" }}</td>
+                  <td>{{ a.location.name|default:a.location_label }}</td>
+                  <td>{% if a.room_number %}Room {{ a.room_number }}{% else %}<span class="text-muted">TBD</span>{% endif %}</td>
+                  <td>
+                    <span class="badge
+                      {% if a.status == 'ACCEPTED' %}bg-success
+                      {% elif a.status == 'PENDING' %}bg-warning text-dark
+                      {% elif a.status == 'DECLINED' %}bg-danger
+                      {% else %}bg-secondary{% endif %}">
+                      {{ a.status }}
+                    </span>
+                  </td>
+                  <td>{{ a.customer_label|default:"(unknown)" }}</td>
+                  <td>{{ a.consultant.username|default:"–" }}</td>
+                  <td>#{{ a.id }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="p-3 text-muted">No appointments today.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- FUTURE -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-header">
+      <strong>Future</strong>
+    </div>
+
+    <div class="card-body p-0">
+      {% if future_appts %}
+        <div class="table-responsive">
+          <table class="table table-striped mb-0 align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Date</th><th>Time</th><th>Location</th><th>Room</th><th>Status</th><th>Customer</th><th>Consultant</th><th>ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in future_appts %}
+                <tr>
+                  <td>{{ a.date|date:"Y-m-d" }}</td>
+                  <td>{{ a.time|time:"H:i" }}</td>
+                  <td>{{ a.location.name|default:a.location_label }}</td>
+                  <td>{% if a.room_number %}Room {{ a.room_number }}{% else %}<span class="text-muted">TBD</span>{% endif %}</td>
+                  <td>
+                    <span class="badge
+                      {% if a.status == 'ACCEPTED' %}bg-success
+                      {% elif a.status == 'PENDING' %}bg-warning text-dark
+                      {% elif a.status == 'DECLINED' %}bg-danger
+                      {% else %}bg-secondary{% endif %}">
+                      {{ a.status }}
+                    </span>
+                  </td>
+                  <td>{{ a.customer_label|default:"(unknown)" }}</td>
+                  <td>{{ a.consultant.username|default:"–" }}</td>
+                  <td>#{{ a.id }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="p-3 text-muted">No future appointments.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- PAST -->
+  <div class="card shadow-sm">
+    <div class="card-header">
+      <strong>Past</strong>
+    </div>
+
+    <div class="card-body p-0">
+      {% if past_appts %}
+        <div class="table-responsive">
+          <table class="table table-striped mb-0 align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Date</th><th>Time</th><th>Location</th><th>Room</th><th>Status</th><th>Customer</th><th>Consultant</th><th>ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in past_appts %}
+                <tr>
+                  <td>{{ a.date|date:"Y-m-d" }}</td>
+                  <td>{{ a.time|time:"H:i" }}</td>
+                  <td>{{ a.location.name|default:a.location_label }}</td>
+                  <td>{% if a.room_number %}Room {{ a.room_number }}{% else %}<span class="text-muted">–</span>{% endif %}</td>
+                  <td>
+                    <span class="badge
+                      {% if a.status == 'ACCEPTED' %}bg-success
+                      {% elif a.status == 'PENDING' %}bg-warning text-dark
+                      {% elif a.status == 'DECLINED' %}bg-danger
+                      {% else %}bg-secondary{% endif %}">
+                      {{ a.status }}
+                    </span>
+                  </td>
+                  <td>{{ a.customer_label|default:"(unknown)" }}</td>
+                  <td>{{ a.consultant.username|default:"–" }}</td>
+                  <td>#{{ a.id }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="p-3 text-muted">No past appointments.</div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
