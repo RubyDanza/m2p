@@ -10,7 +10,11 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-change-me")
 DEBUG = os.environ.get("DEBUG", "True").lower() == "true"
 
 # Hosts (Render)
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".onrender.com",
+]
 
 render_host = os.environ.get("RENDER_EXTERNAL_HOSTNAME")  # e.g. m2p-vw9y.onrender.com
 if render_host:
